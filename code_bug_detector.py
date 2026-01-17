@@ -9,28 +9,25 @@ from typing import List, Dict, Optional
 import json
 
 
-# Bug类型映射字典（从EXTRACTION_REPORT.ipynb导入）
+# Bug类型映射字典（基于实际数据集bug_source_code/metadata.json）
 BUG_TYPE_MAPPING = {
-    "BT001": "内存泄漏 (Memory Leak) - 动态分配的内存未被正确释放",
-    "BT002": "缓冲区溢出 (Buffer Overflow) - 写入数据超出缓冲区边界",
-    "BT003": "空指针解引用 (Null Pointer Dereference) - 试图访问空指针指向的内存",
-    "BT004": "使用未初始化变量 (Use of Uninitialized Variable) - 使用了未赋初值的变量",
-    "BT005": "数组越界 (Array Index Out of Bounds) - 数组索引超出有效范围",
-    "BT006": "悬空指针 (Dangling Pointer) - 使用指向已释放内存的指针",
-    "BT007": "整数溢出 (Integer Overflow) - 整数运算结果超出类型表示范围",
-    "BT008": "格式化字符串漏洞 (Format String Vulnerability) - printf等函数的格式字符串可被控制",
-    "BT009": "资源泄漏 (Resource Leak) - 文件句柄、套接字等资源未正确关闭",
-    "BT010": "竞态条件 (Race Condition) - 多线程环境下的并发访问问题",
-    "BT011": "除零错误 (Division by Zero) - 除数为零导致的运行时错误",
-    "BT012": "类型转换错误 (Type Casting Error) - 不安全或不正确的类型转换",
-    "BT013": "逻辑错误 (Logic Error) - 程序逻辑不符合预期",
-    "BT014": "off-by-one错误 (Off-by-One Error) - 循环或数组访问的边界差一错误",
-    "BT015": "内存重复释放 (Double Free) - 同一块内存被释放多次",
-    "BT016": "符号错误 (Sign Error) - 有符号和无符号整数混用导致的问题",
-    "BT017": "栈溢出 (Stack Overflow) - 栈空间使用超出限制",
-    "BT018": "死锁 (Deadlock) - 多线程相互等待导致程序挂起",
-    "BT019": "未检查返回值 (Unchecked Return Value) - 未检查函数返回值导致错误被忽略",
-    "BT020": "其他 (Other) - 其他类型的bug"
+    # A类: Signature错误（函数签名相关）
+    "A.1": "Signature: Incorrect Function Usage - 函数使用不当",
+    "A.2": "Signature: Fault Input Type - 错误的输入类型",
+    "A.3": "Signature: Incorrect Function Return Value - 函数返回值错误",
+    "A.4": "Signature: Incorrect Variable Usage - 变量使用不当",
+
+    # B类: Sanitizer错误
+    "B": "Sanitizer: Control Expression Error - 控制表达式错误",
+
+    # C类: Memory错误（内存相关）
+    "C.1": "Memory Error: Null Pointer Dereference - 空指针解引用",
+    "C.2": "Memory Error: Uncontrolled Resource Consumption - 资源消耗失控",
+    "C.3": "Memory Error: Memory Overflow - 内存溢出",
+
+    # D类: Logic Organization错误（逻辑组织）
+    "D.1": "Logic Organization: Improper Condition Organization - 条件组织不当",
+    "D.2": "Logic Organization: Wrong Function Call Sequence - 函数调用顺序错误"
 }
 
 
@@ -149,7 +146,7 @@ class CodeBugDetector(dspy.Module):
                 output.append(f"  位置: 第 {bug.get('line_number', 'N/A')} 行")
                 output.append(f"  代码: {bug.get('code_line', 'N/A')}")
 
-                bug_type_id = bug.get('bug_type_id', 'BT020')
+                bug_type_id = bug.get('bug_type_id', 'D.1')
                 bug_type_desc = BUG_TYPE_MAPPING.get(bug_type_id, "未知Bug类型")
                 output.append(f"  类型: {bug_type_desc}")
 
