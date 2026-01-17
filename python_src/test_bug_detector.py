@@ -7,7 +7,7 @@ python test_bug_detector.py
 
 import dspy
 import os
-from code_bug_detector import CodeBugDetector, BUG_TYPE_MAPPING
+from python_src.code_bug_detector import CodeBugDetector, BUG_TYPE_MAPPING
 
 
 def setup_dspy_model():
