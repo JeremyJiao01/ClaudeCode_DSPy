@@ -1,0 +1,16 @@
+--- buggy+++ fixed@@ -623,7 +623,7 @@ 
+     // Find missing lines.
+     for (Instruction &I : instructions(F)) {
+-      if (isa<DbgValueInst>(&I) || isa<PHINode>(&I))
++      if (isa<DbgValueInst>(&I))
+         continue;
+ 
+       auto DL = I.getDebugLoc();
+@@ -632,7 +632,7 @@         continue;
+       }
+ 
+-      if (!DL) {
++      if (!isa<PHINode>(&I) && !DL) {
+         dbg() << "WARNING: Instruction with empty DebugLoc in function ";
+         dbg() << F.getName() << " --";
+         I.print(dbg());

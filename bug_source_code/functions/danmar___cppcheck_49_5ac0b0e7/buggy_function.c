@@ -1,0 +1,7 @@
+                    continue;
+
+                tok2 = tok2->next();
+                while (tok2 && tok2->isCast() && (tok2->valueType() && (tok2->valueType()->pointer || (tok2->valueType()->typeSize(*mSettings) >= mSettings->sizeof_pointer))))
+                    tok2 = tok2->astOperand2() ? tok2->astOperand2() : tok2->astOperand1();
+                if (Token::Match(tok2, "%varid%", varid))
+                    tok2 = tok2->next();

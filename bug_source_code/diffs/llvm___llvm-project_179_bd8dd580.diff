@@ -1,0 +1,14 @@
+--- buggy+++ fixed@@ -283,6 +283,14 @@     if (EVI->getAggregateOperand() != II)
+       return false;
+   }
++
++  // Make sure no potentially eflags clobbering phi moves can be inserted in
++  // between.
++  auto HasPhis = [](const BasicBlock *Succ) {
++    return !llvm::empty(Succ->phis());
++  };
++  if (I->isTerminator() && llvm::any_of(successors(I), HasPhis))
++    return false;
+ 
+   CC = TmpCC;
+   return true;

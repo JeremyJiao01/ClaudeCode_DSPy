@@ -1,0 +1,13 @@
+        // Assume range constructor if passed a pair of iterators
+        if (astIsContainer(parent) && args.size() == 2 && astIsIterator(args[0]) && astIsIterator(args[1])) {
+            LifetimeStore::forEach(
+            args, "Passed to initializer list.", ValueFlow::Value::LifetimeKind::SubObject, [&](const LifetimeStore& ls) {
+                ls.byDerefCopy(tok, tokenlist, errorLogger, settings);
+            });
+        } else {
+            LifetimeStore::forEach(args,
+                                   "Passed to initializer list.",
+                                   ValueFlow::Value::LifetimeKind::SubObject,
+            [&](const LifetimeStore& ls) {
+                ls.byVal(tok, tokenlist, errorLogger, settings);
+            });

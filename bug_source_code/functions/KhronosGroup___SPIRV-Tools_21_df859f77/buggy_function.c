@@ -1,0 +1,7 @@
+            type_mgr->GetType(element_def->type_id())->AsVector();
+        if (element_type) {
+          uint32_t vector_size = element_type->element_count();
+          if (vector_size < element_index) {
+            // The element we want comes after this vector.
+            element_index -= vector_size;
+          } else {

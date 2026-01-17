@@ -1,0 +1,12 @@
+--- buggy+++ fixed@@ -2358,8 +2358,11 @@     if (HasSafePathToCall &&
+         GetBasicARCInstKind(Retain) == ARCInstKind::RetainRV &&
+         GetBasicARCInstKind(Autorelease) == ARCInstKind::AutoreleaseRV &&
+-        !cast<CallInst>(*DependingInstructions.begin())->isTailCall())
++        !cast<CallInst>(*DependingInstructions.begin())->isTailCall()) {
++      DependingInstructions.clear();
++      Visited.clear();
+       continue;
++    }
+ 
+     DependingInstructions.clear();
+     Visited.clear();

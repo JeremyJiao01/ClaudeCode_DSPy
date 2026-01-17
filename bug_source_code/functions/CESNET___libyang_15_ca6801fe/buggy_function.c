@@ -1,0 +1,13 @@
+                    lys_node_addchild(parent, NULL, dev->orig_node);
+                    if (reapply) {
+                        /* augment is supposed to be applied, so fix pointers in target and the status of the original node */
+                        if (parent->child == dev->orig_node) {
+                            /* the only node in augment */
+                            parent->flags |= LYS_NOTAPPLIED; /* allow apply_aug() */
+                            apply_aug((struct lys_node_augment *)parent, unres);
+                            /* else other nodes from augment applied, nothing more needed in target, everything was done
+                             * by lys_node_addchild() */
+                        }
+                    }
+                } else {
+                    /* non-augment, non-toplevel */

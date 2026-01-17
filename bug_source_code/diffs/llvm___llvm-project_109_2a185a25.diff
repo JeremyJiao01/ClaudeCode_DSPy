@@ -1,0 +1,8 @@
+--- buggy+++ fixed@@ -520,8 +520,6 @@     MachineOperand &MO = MI->getOperand(i);
+     if (!MO.isReg())
+       continue;
+-    if (MO.isImplicit())
+-      break;
+     if (MO.isUse())
+       continue;
+     for (int rx : regIndices(MO.getReg())) {

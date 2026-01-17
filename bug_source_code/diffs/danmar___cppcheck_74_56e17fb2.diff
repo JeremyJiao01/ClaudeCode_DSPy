@@ -1,0 +1,8 @@
+--- buggy+++ fixed@@ -883,7 +883,7 @@                 compileUnaryOp(tok, state, compileExpression);
+             else
+                 compileBinOp(tok, state, compileExpression);
+-            if (Token::simpleMatch(tok, "}"))
++            while (Token::simpleMatch(tok, "}"))
+                 tok = tok->next();
+         } else break;
+     }
