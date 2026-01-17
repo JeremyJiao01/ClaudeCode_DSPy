@@ -1,0 +1,9 @@
+--- buggy+++ fixed@@ -1089,8 +1089,8 @@   createFlow();
+   insertConditions(false);
+   insertConditions(true);
++  setPhiValues();
+   simplifyConditions();
+-  setPhiValues();
+   simplifyAffectedPhis();
+   rebuildSSA();
+ 

@@ -1,0 +1,15 @@
+--- buggy+++ fixed@@ -1000,7 +1000,7 @@             functionName == "free" ||
+             functionName == "fclose" ||
+             functionName == "realloc")
+-            break;
++            continue;
+ 
+         if (!CheckMemoryLeakInFunction::test_white_list(functionName, mSettings, mTokenizer->isCPP()))
+             continue;
+@@ -1016,7 +1016,6 @@             if (isReopenStandardStream(arg))
+                 continue;
+             functionCallLeak(arg, arg->str(), functionName);
+-            break;
+         }
+ 
+     }

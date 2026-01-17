@@ -1,0 +1,8 @@
+--- buggy+++ fixed@@ -908,7 +908,7 @@ 
+   auto NewFoldedConst = [&](bool IsTrueArm, Value *V) {
+     bool IsCastOpRHS = (CastOp == RHS);
+-    bool IsZExt = isa<ZExtInst>(CastOp);
++    bool IsZExt = isa<ZExtOperator>(CastOp);
+     Constant *C;
+ 
+     if (IsTrueArm) {

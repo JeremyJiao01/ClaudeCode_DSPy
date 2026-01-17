@@ -1,0 +1,9 @@
+    LoopVectorizeHints Hints(L, true, *ORE);
+    Hints.setAlreadyVectorized();
+  }
+  // Disable runtime unrolling when vectorizing the epilogue loop.
+  if (CanonicalIVStartValue)
+    AddRuntimeUnrollDisableMetaData(L);
+
+  // 3. Fix the vectorized code: take care of header phi's, live-outs,
+  //    predication, updating analyses.

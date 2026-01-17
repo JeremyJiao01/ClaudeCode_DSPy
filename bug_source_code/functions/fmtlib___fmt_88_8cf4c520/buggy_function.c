@@ -1,0 +1,9 @@
+    for (auto end = p + s.size() - block_size + 1; p < end;) p = transcode(p);
+  }
+  if (auto num_chars_left = s.data() + s.size() - p) {
+    char buf[4] = {};
+    memcpy(buf, p, num_chars_left);
+    transcode(buf);
+  }
+  buffer_.push_back(0);
+}

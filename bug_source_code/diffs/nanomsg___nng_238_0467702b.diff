@@ -1,0 +1,9 @@
+--- buggy+++ fixed@@ -835,7 +835,8 @@ 	}
+ 
+ 	if (name == NULL) {
+-		return (ENOPROTOOPT);
++		errno = ENOPROTOOPT;
++		return (-1);
+ 	}
+ 
+ 	if ((rv = nng_setopt((nng_socket) s, name, valp, sz)) != 0) {

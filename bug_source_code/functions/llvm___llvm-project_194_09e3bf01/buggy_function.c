@@ -1,0 +1,12 @@
+  // If the false value simplified to false, then the result of the compare
+  // is equal to "Cond && TCmp".  This also catches the case when the false
+  // value simplified to false and the true value to true, returning "Cond".
+  if (match(FCmp, m_Zero()))
+    if (Value *V = SimplifyAndInst(Cond, TCmp, Q, MaxRecurse))
+      return V;
+  // If the true value simplified to true, then the result of the compare
+  // is equal to "Cond || FCmp".
+  if (match(TCmp, m_One()))
+    if (Value *V = SimplifyOrInst(Cond, FCmp, Q, MaxRecurse))
+      return V;
+  // Finally, if the false value simplified to true and the true value to

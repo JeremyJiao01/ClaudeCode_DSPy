@@ -1,0 +1,10 @@
+  // instead of a select to synthesize the desired value.
+  bool IsOneZero = false;
+  bool EmitOneOrZero = true;
+  auto *CI = dyn_cast<ConstantInt>(OtherVal);
+  if (CI && CI->getValue().getActiveBits() <= 64) {
+    IsOneZero = InitVal->isNullValue() && CI->isOne();
+
+    auto *CIInit = dyn_cast<ConstantInt>(GV->getInitializer());
+    if (CIInit && CIInit->getValue().getActiveBits() <= 64) {
+      uint64_t ValInit = CIInit->getZExtValue();

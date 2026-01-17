@@ -1,0 +1,11 @@
+--- buggy+++ fixed@@ -171,7 +171,10 @@ 
+   if (!isDereferenceableAndAlignedPointer(Str, 1, APInt(64, Len), DL))
+     return false;
+-    
++
++  if (CI->getFunction()->hasFnAttribute(Attribute::SanitizeMemory))
++    return false;
++
+   return true;
+ }
+ 

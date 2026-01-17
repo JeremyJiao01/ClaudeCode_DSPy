@@ -1,0 +1,8 @@
+--- buggy+++ fixed@@ -472,7 +472,7 @@                 name = ((struct lys_node *)elem)->name;
+             }
+ 
+-            if (lys_node_module((struct lys_node *)elem) != top_smodule) {
++            if (!((struct lys_node *)elem)->parent || lys_node_module((struct lys_node *)elem) != top_smodule) {
+                 prefix = lys_node_module((struct lys_node *)elem)->name;
+             } else {
+                 prefix = NULL;

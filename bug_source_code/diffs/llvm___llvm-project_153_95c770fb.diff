@@ -1,0 +1,8 @@
+--- buggy+++ fixed@@ -1860,7 +1860,7 @@     return getFrameIndexReference(MF, FI, FrameReg);
+ 
+   FrameReg = TRI->getStackRegister();
+-  return alignTo(MFI.getMaxCallFrameSize(), getStackAlignment()) + it->second;
++  return alignDown(MFI.getMaxCallFrameSize(), getStackAlignment()) + it->second;
+ }
+ 
+ int X86FrameLowering::getFrameIndexReferenceSP(const MachineFunction &MF,
