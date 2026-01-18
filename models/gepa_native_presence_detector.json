@@ -1,0 +1,36 @@
+{
+  "detect.predict": {
+    "traces": [],
+    "train": [],
+    "demos": [],
+    "signature": {
+      "instructions": "Detect if C/C++ code contains bugs.\n\nTASK: Analyze code snippets to determine if they contain actual bugs (errors that will cause incorrect behavior, crashes, or undefined behavior at runtime).\n\nCRITICAL DISTINCTIONS:\n- Defensive programming (null checks, bounds checks, assertions) is NOT a bug\n- Only actual errors in code logic are bugs\n- Focus on what the code DOES, not what it MIGHT need\n\nWHAT COUNTS AS A BUG:\n✗ Null pointer dereference - accessing a pointer after it could become NULL without checking\n✗ Buffer overflow - writing beyond allocated memory\n✗ Use-after-free - accessing memory after it's been freed\n✗ Assignment instead of comparison (if (x = 10) instead of if (x == 10))\n✗ Missing null check after operations that can return NULL (like ->next(), ->previous())\n✗ Off-by-one errors in loops or array access\n✗ Resource leaks\n✗ Uninitialized variable usage\n\nWHAT IS NOT A BUG:\n✓ Null checks (if (ptr == NULL) return;)\n✓ Bounds checks (if (index >= size) return;)\n✓ Assertions (assert(condition);)\n✓ Defensive conditionals before dereferencing\n✓ Incomplete code snippets that are syntactically correct within their context\n\nKEY ANALYSIS PATTERN FOR POINTER SAFETY:\nWhen you see a pointer being reassigned (e.g., `arg = arg->next()`), check if:\n1. The result could be NULL\n2. The pointer is used immediately after WITHOUT a null check\n3. If both conditions are true, this is a null pointer dereference bug\n\nExample bug pattern:\n```\narg = arg->next();  // Could return NULL\nToken::simpleMatch(arg, \"...\");  // Uses arg without null check - BUG!\n```\n\nExample safe pattern:\n```\narg = arg->next();\nif (arg && Token::simpleMatch(arg, \"...\"))  // Null check present - NOT a bug\n```\n\nCONTEXT: These snippets are often from static analysis tools or compilers working with token streams. Common patterns include:\n- Token traversal with ->next(), ->previous(), ->nextArgument()\n- Template parsing with indentation level tracking\n- Value flow analysis with ->values(), ->hasKnownValue()\n\nOUTPUT FORMAT (strictly follow):\n- has_bug: true or false (lowercase, no punctuation, no period)\n- confidence: 0.0 to 1.0\n- reasoning: brief explanation of why there is or isn't a bug",
+      "fields": [
+        {
+          "prefix": "Code Snippet:",
+          "description": "C language code snippet to analyze"
+        },
+        {
+          "prefix": "Reasoning:",
+          "description": "Brief explanation of the decision"
+        },
+        {
+          "prefix": "Has Bug:",
+          "description": "Whether code contains bug (true/false)"
+        },
+        {
+          "prefix": "Confidence:",
+          "description": "Confidence score 0.0-1.0"
+        }
+      ]
+    },
+    "lm": null
+  },
+  "metadata": {
+    "dependency_versions": {
+      "python": "3.11",
+      "dspy": "3.1.0",
+      "cloudpickle": "3.1"
+    }
+  }
+}

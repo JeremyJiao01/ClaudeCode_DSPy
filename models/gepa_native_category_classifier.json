@@ -1,0 +1,40 @@
+{
+  "classify.predict": {
+    "traces": [],
+    "train": [],
+    "demos": [],
+    "signature": {
+      "instructions": "Classify bug into one of three categories.\n\nCATEGORY DEFINITIONS:\n\n1. MEMORY (内存错误)\n   - Null pointer dereference\n   - Buffer overflow / underflow\n   - Memory leak\n   - Use after free\n   - Uninitialized memory access\n\n   Examples:\n   ✗ int *p = NULL; *p = 10;\n   ✗ char buf[10]; strcpy(buf, very_long_string);\n   ✗ int *p = malloc(100); free(p); *p = 10;\n\n2. LOGIC (逻辑错误)\n   - Control flow errors\n   - Condition errors (wrong operator, wrong logic)\n   - Function call sequence errors\n   - Loop logic errors\n\n   Examples:\n   ✗ if (x = 10) { ... }  // Should be ==\n   ✗ if (x > 10 && x < 5) { ... }  // Impossible condition\n   ✗ close(fd); write(fd, ...);  // Wrong sequence\n\n3. SIGNATURE (接口使用错误)\n   - Wrong function usage\n   - Wrong parameter type\n   - Wrong return value handling\n   - API misuse\n\n   Examples:\n   ✗ strlen(integer_variable);  // Wrong type\n   ✗ FILE *f = fopen(...); fread(f, ...);  // Ignore return value check\n   ✗ strcmp(str1, str2) == 1;  // Wrong return value assumption\n\nOutput must be:\n- category: MEMORY or LOGIC or SIGNATURE (uppercase)\n- confidence: 0.0 to 1.0\n- explanation: brief reasoning",
+      "fields": [
+        {
+          "prefix": "Code Snippet:",
+          "description": "C code snippet with confirmed bug"
+        },
+        {
+          "prefix": "Reasoning: Let's think step by step in order to",
+          "description": "${reasoning}"
+        },
+        {
+          "prefix": "Category:",
+          "description": "Bug category: MEMORY, LOGIC, or SIGNATURE"
+        },
+        {
+          "prefix": "Confidence:",
+          "description": "Confidence score 0.0-1.0"
+        },
+        {
+          "prefix": "Explanation:",
+          "description": "Brief explanation of classification"
+        }
+      ]
+    },
+    "lm": null
+  },
+  "metadata": {
+    "dependency_versions": {
+      "python": "3.11",
+      "dspy": "3.1.0",
+      "cloudpickle": "3.1"
+    }
+  }
+}
