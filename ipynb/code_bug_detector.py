@@ -2,11 +2,14 @@
 DSPy Code Bug Detection Module
 
 这个模块实现了基于DSPy的C语言代码bug检测功能。
+支持使用DSPy优化器（如BootstrapFewShot）进行模型优化。
 """
 
 import dspy
 from typing import List, Dict, Optional
 import json
+import os
+import pickle
 
 
 # Bug类型映射字典（基于实际数据集bug_source_code/metadata.json）
@@ -57,13 +60,82 @@ class CodeBugDetector(dspy.Module):
     代码bug检测器模块
 
     使用DSPy的ChainOfThought来分析代码并检测潜在的bug
+    支持加载优化后的模型以提高准确性
     """
 
-    def __init__(self):
+    def __init__(self, optimized_model_path: Optional[str] = None):
+        """
+        初始化bug检测器
+
+        Args:
+            optimized_model_path: 优化后模型的保存路径，如果提供则加载优化模型
+        """
         super().__init__()
         self.detect = dspy.ChainOfThought(BugDetectionSignature)
+        self.is_optimized = False
 
-    def forward(self, code_snippet: str) -> Dict:
+        # 如果提供了优化模型路径，尝试加载
+        if optimized_model_path and os.path.exists(optimized_model_path):
+            self.load_optimized_model(optimized_model_path)
+
+    def load_optimized_model(self, model_path: str):
+        """
+        加载优化后的模型
+
+        Args:
+            model_path: 模型文件路径
+        """
+        try:
+            # 检查文件扩展名
+            if model_path.endswith('.pkl'):
+                # 对于.pkl文件，使用allow_pickle=True
+                import dspy
+                # 直接加载状态
+                with open(model_path, 'rb') as f:
+                    import pickle
+                    state = pickle.load(f)
+                    # 恢复detect模块的状态
+                    if hasattr(state, 'detect'):
+                        self.detect = state.detect
+                    self.is_optimized = True
+                    print(f"✓ 已加载优化模型: {model_path}")
+            elif model_path.endswith('.json'):
+                # JSON格式更安全
+                self.load(model_path)
+                self.is_optimized = True
+                print(f"✓ 已加载优化模型: {model_path}")
+            else:
+                raise ValueError(f"不支持的文件格式: {model_path}")
+        except Exception as e:
+            print(f"✗ 加载优化模型失败: {e}")
+            print("  将使用未优化的模型")
+
+    def save_optimized_model(self, model_path: str):
+        """
+        保存优化后的模型
+
+        Args:
+            model_path: 保存路径
+        """
+        os.makedirs(os.path.dirname(model_path) if os.path.dirname(model_path) else '.', exist_ok=True)
+
+        # 根据文件扩展名选择保存格式
+        if model_path.endswith('.pkl'):
+            # 使用pickle保存整个对象
+            with open(model_path, 'wb') as f:
+                pickle.dump(self, f)
+            print(f"✓ 优化模型已保存: {model_path} (PKL格式)")
+        elif model_path.endswith('.json'):
+            # 使用JSON格式（更安全）
+            self.save(model_path)
+            print(f"✓ 优化模型已保存: {model_path} (JSON格式)")
+        else:
+            # 默认使用JSON
+            json_path = model_path if model_path.endswith('.json') else model_path + '.json'
+            self.save(json_path)
+            print(f"✓ 优化模型已保存: {json_path} (JSON格式)")
+
+    def forward(self, code_snippet: str):
         """
         检测代码中的bug
 
@@ -71,7 +143,7 @@ class CodeBugDetector(dspy.Module):
             code_snippet: C语言代码片段
 
         Returns:
-            包含bug检测结果的字典
+            DSPy Prediction对象
         """
         # 构建提示信息，包含bug类型映射
         bug_types_info = "\n".join([
@@ -101,8 +173,22 @@ class CodeBugDetector(dspy.Module):
 如果没有bug，bug_details应该返回：{{"bugs": []}}
 """
 
-        # 调用DSPy进行推理
+        # 调用DSPy进行推理，返回Prediction对象
         result = self.detect(code_snippet=enhanced_prompt)
+        return result
+
+    def predict(self, code_snippet: str) -> Dict:
+        """
+        便捷方法：检测代码并返回格式化的字典结果
+
+        Args:
+            code_snippet: C语言代码片段
+
+        Returns:
+            包含bug检测结果的字典
+        """
+        # 调用forward获取Prediction对象
+        result = self.forward(code_snippet)
 
         # 解析结果
         has_bug = str(result.has_bug).lower() in ['true', 'yes', '1', 'True']
@@ -118,6 +204,18 @@ class CodeBugDetector(dspy.Module):
             "bug_details": bug_details,
             "raw_response": result
         }
+
+    def __call__(self, code_snippet: str) -> Dict:
+        """
+        使检测器可以直接调用，返回格式化的字典
+
+        Args:
+            code_snippet: C语言代码片段
+
+        Returns:
+            包含bug检测结果的字典
+        """
+        return self.predict(code_snippet)
 
     def format_output(self, detection_result: Dict) -> str:
         """

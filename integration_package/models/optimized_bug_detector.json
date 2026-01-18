@@ -1,0 +1,67 @@
+{
+  "detect.predict": {
+    "traces": [],
+    "train": [],
+    "demos": [
+      {
+        "code_snippet": "                /* adding zeros at the end */\n                num_len = exponent + e_val;\n                dp_position = num_len; /* decimal point is behind the actual value */\n            } else if ((size_t)labs(e_val) < (exponent - minus)) {\n                /* adding decimal point between the integer's digits */\n                num_len = exponent + 1;\n                dp_position = exponent + e_val;",
+        "has_bug": false,
+        "bug_details": "{\"bugs\": []}"
+      },
+      {
+        "code_snippet": "  if (folded_inst != nullptr) {\n    // We do not want to change the body of the function by adding new\n    // instructions.  When folding we can only generate new constants.\n    assert(folded_inst->IsConstant() &&\n           \"CCP is only interested in constant values.\");\n    uint32_t new_val = ComputeLatticeMeet(instr, folded_inst->result_id());\n    values_[instr->result_id()] = new_val;",
+        "has_bug": true,
+        "bug_details": "{\"bugs\": [{\"bug_type_id\": \"A.1\", \"bug_type\": \"Signature: Incorrect Function Usage\", \"explanation\": \"This code contains Signature: Incorrect Function Usage\"}]}"
+      },
+      {
+        "code_snippet": "            type_mgr->GetType(element_def->type_id())->AsVector();\n        if (element_type) {\n          uint32_t vector_size = element_type->element_count();\n          if (vector_size <= element_index) {\n            // The element we want comes after this vector.\n            element_index -= vector_size;\n          } else {",
+        "has_bug": false,
+        "bug_details": "{\"bugs\": []}"
+      },
+      {
+        "code_snippet": "                    lys_node_addchild(parent, NULL, dev->orig_node);\n                    if (reapply) {\n                        /* augment is supposed to be applied, so fix pointers in target and the status of the original node */\n                        if (parent->child == dev->orig_node) {\n                            /* the only node in augment */\n                            parent->flags |= LYS_NOTAPPLIED; /* allow apply_aug() */\n                            apply_aug((struct lys_node_augment *)parent, unres);\n                            /* else other nodes from augment applied, nothing more needed in target, everything was done\n                             * by lys_node_addchild() */\n                        }\n                    }\n                } else {\n                    /* non-augment, non-toplevel */",
+        "has_bug": true,
+        "bug_details": "{\"bugs\": [{\"bug_type_id\": \"D.1\", \"bug_type\": \"Logic Organization: Improper Condition Organization\", \"explanation\": \"This code contains Logic Organization: Improper Condition Organization\"}]}"
+      },
+      {
+        "code_snippet": "    if (op || !(options & LYXP_SCHEMA)) {\n        /* general root that can access everything */\n        return LYXP_NODE_ROOT;\n    } else if (!ctx_node || !ctx_node->schema || (ctx_node->schema->flags & LYS_CONFIG_W)) {\n        /* root context node can access only config data (because we said so, it is unspecified) */\n        return LYXP_NODE_ROOT_CONFIG;\n    }",
+        "has_bug": false,
+        "bug_details": "{\"bugs\": []}"
+      },
+      {
+        "code_snippet": "                name = ((struct lys_node *)elem)->name;\n            }\n\n            if (lys_node_module((struct lys_node *)elem) != top_smodule) {\n                prefix = lys_node_module((struct lys_node *)elem)->name;\n            } else {\n                prefix = NULL;",
+        "has_bug": true,
+        "bug_details": "{\"bugs\": [{\"bug_type_id\": \"B\", \"bug_type\": \"Sanitizer: Control Expression Error\", \"explanation\": \"This code contains Sanitizer: Control Expression Error\"}]}"
+      }
+    ],
+    "signature": {
+      "instructions": "代码bug检测的DSPy Signature\n\n输入：C语言代码片段\n输出：bug检测结果，包括是否存在bug、bug位置、bug类型等",
+      "fields": [
+        {
+          "prefix": "Code Snippet:",
+          "description": "需要检测的C语言代码片段"
+        },
+        {
+          "prefix": "Reasoning: Let's think step by step in order to",
+          "description": "${reasoning}"
+        },
+        {
+          "prefix": "Has Bug:",
+          "description": "代码是否存在bug (True/False)"
+        },
+        {
+          "prefix": "Bug Details:",
+          "description": "如果存在bug，提供详细信息的JSON字符串，格式：{\"bugs\": [{\"line_number\": int, \"code_line\": str, \"bug_type_id\": str, \"explanation\": str}]}"
+        }
+      ]
+    },
+    "lm": null
+  },
+  "metadata": {
+    "dependency_versions": {
+      "python": "3.11",
+      "dspy": "3.1.0",
+      "cloudpickle": "3.1"
+    }
+  }
+}
