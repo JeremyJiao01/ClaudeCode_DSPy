@@ -183,6 +183,11 @@
             box-shadow: 0 4px 20px rgba(255, 159, 67, 0.15);
         }
 
+        .stat-card.medium.active {
+            border-color: var(--accent-purple);
+            box-shadow: 0 4px 20px rgba(168, 85, 247, 0.15);
+        }
+
         .stat-card.success.active {
             border-color: var(--accent-green);
             box-shadow: 0 4px 20px rgba(38, 222, 129, 0.15);
@@ -199,6 +204,10 @@
 
         .stat-card.warning {
             border-left: 3px solid var(--accent-orange);
+        }
+
+        .stat-card.medium {
+            border-left: 3px solid var(--accent-purple);
         }
 
         .stat-card.success {
@@ -218,6 +227,7 @@
 
         .stat-card.critical .stat-value { color: var(--accent-red); }
         .stat-card.warning .stat-value { color: var(--accent-orange); }
+        .stat-card.medium .stat-value { color: var(--accent-purple); }
         .stat-card.success .stat-value { color: var(--accent-green); }
         .stat-card.info .stat-value { color: var(--accent-blue); }
 
@@ -258,6 +268,7 @@
             align-items: center;
             justify-content: center;
             font-size: 12px;
+            transition: transform var(--transition);
         }
 
         .section-toggle {
@@ -266,8 +277,9 @@
             transition: transform var(--transition);
         }
 
-        .section.collapsed .section-toggle {
-            transform: rotate(-90deg);
+        .section.collapsed .section-toggle,
+        .section.collapsed .section-icon {
+            transform: rotate(180deg);
         }
 
         .section.collapsed .section-content {
@@ -493,6 +505,17 @@
             line-height: 1.7;
         }
 
+        .code-block .highlight {
+            background: rgba(255, 77, 77, 0.25); /* Higher contrast background */
+            color: #ff9999; /* Brighter text */
+            padding: 2px 4px; /* Slightly more padding */
+            border-radius: 4px;
+            border: 1px solid rgba(255, 77, 77, 0.4); /* Add border for visibility */
+            display: inline-block; /* Ensure padding/border render correctly */
+            width: 100%; /* Highlight full line width if possible, or at least text width */
+            box-sizing: border-box;
+        }
+
         .code-block {
             background: var(--bg-secondary);
             border: 1px solid var(--border);
@@ -501,20 +524,104 @@
             overflow-x: auto;
             font-size: 12px;
             line-height: 1.6;
+            white-space: pre; /* Preserve indentation */
+            font-family: var(--font-mono);
+            position: relative; /* Anchor for copy button */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .code-block div {
+            display: block;
         }
 
         .code-block .line-number {
             color: var(--text-muted);
-            margin-right: 16px;
+            margin-right: 1ch;
             user-select: none;
+            display: inline-block;
+            min-width: 3ch;
+            text-align: right;
         }
 
-        .code-block .highlight {
-            background: var(--accent-red-bg);
-            color: var(--accent-red);
-            padding: 0 4px;
-            border-radius: 2px;
+        /* Copy Button for Code Blocks */
+        .code-copy-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 4px 8px;
+            font-size: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all var(--transition);
+            opacity: 0; /* Hidden by default */
+            font-family: var(--font-mono);
         }
+
+        .code-block:hover .code-copy-btn {
+            opacity: 1; /* Show on hover */
+        }
+
+        .code-copy-btn:hover {
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+            background: var(--bg-tertiary);
+        }
+
+        /* Function Name Copy Styles */
+        .issue-function {
+            font-weight: 600;
+            color: var(--text-primary);
+            cursor: copy; /* Indicate copy action */
+            transition: color var(--transition);
+            position: relative;
+        }
+        
+        .issue-function:hover {
+            color: var(--accent-blue);
+            text-decoration: underline;
+            text-decoration-style: dotted;
+        }
+
+        .issue-function:active {
+            transform: scale(0.98);
+        }
+
+        /* Tooltip for Copy Feedback */
+        .copy-tooltip {
+            position: absolute;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            pointer-events: none;
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            animation: fadeInOut 1.5s ease forwards;
+            z-index: 1000;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(4px); }
+            20% { opacity: 1; transform: translateY(0); }
+            80% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-4px); }
+        }
+
+        /* Syntax Highlighting */
+        .token-keyword { color: #c678dd; } /* void, return, if, etc. - Purple */
+        .token-type { color: #e8e8e8; }    /* uint types - White */
+        .token-func { color: #61afef; }    /* Function names - Blue */
+        .token-number { color: #d19a66; }  /* Numbers - Orange */
+        .token-var { color: #e5c07b; }     /* Local Variables - Yellow */
+        .token-param { color: #ff4d4d; text-decoration: underline; } /* Parameters - Red Underlined */
+        .token-comment { color: #7f848e; font-style: italic; } /* Comments - Grey */
+        .token-string { color: #98c379; }  /* Strings - Green */
+        .token-macro { color: #ff6b8b; }   /* Macros - Bright Pinkish Red */
 
         .suggestion-box {
             background: var(--accent-green-bg);
@@ -576,6 +683,13 @@
         .graph-node.has-bug .node-indicator {
             background: var(--accent-red);
         }
+
+        /* Node Indicator Colors based on Severity */
+        .graph-node.severity-critical .node-indicator { background: var(--accent-red); box-shadow: 0 0 5px var(--accent-red); }
+        .graph-node.severity-high .node-indicator { background: var(--accent-orange); box-shadow: 0 0 5px var(--accent-orange); }
+        .graph-node.severity-medium .node-indicator { background: var(--accent-purple); box-shadow: 0 0 5px var(--accent-purple); }
+        .graph-node.severity-low .node-indicator { background: var(--accent-blue); box-shadow: 0 0 5px var(--accent-blue); }
+        .graph-node.severity-passed .node-indicator { background: var(--accent-green); box-shadow: 0 0 5px var(--accent-green); }
 
         .graph-row {
             display: flex;
@@ -751,6 +865,17 @@
 
         .function-name {
             color: var(--accent-blue);
+            font-weight: 500;
+        }
+
+        .function-name.severity-critical { color: var(--accent-red); }
+        .function-name.severity-high { color: var(--accent-orange); }
+        .function-name.severity-medium { color: var(--accent-purple); }
+        .function-name.severity-low { color: var(--accent-blue); }
+        .function-name.severity-passed { color: var(--accent-green); }
+
+        .table-group-separator {
+            border-top: 2px solid var(--border);
         }
 
         .lines-badge {
@@ -804,7 +929,297 @@
                 text-align: left;
             }
         }
+
+        /* Function Nav Buttons */
+        .function-nav {
+            display: flex;
+            flex-direction: column; /* Stack rows vertically */
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .nav-group-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .function-nav-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 8px 14px;
+            border-radius: var(--radius);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all var(--transition);
+            display: flex;
+            align-items: center;
+            font-family: var(--font-mono);
+            position: relative;
+        }
+
+        .function-nav-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        /* Severity-based Border Colors (Inactive) */
+        .function-nav-btn.severity-critical { border-color: rgba(255, 77, 77, 0.3); }
+        .function-nav-btn.severity-high { border-color: rgba(255, 159, 67, 0.3); }
+        .function-nav-btn.severity-medium { border-color: rgba(168, 85, 247, 0.3); }
+        .function-nav-btn.severity-low { border-color: rgba(77, 171, 247, 0.3); }
+        .function-nav-btn.severity-passed { border-color: rgba(38, 222, 129, 0.3); }
+
+        /* Severity-based Hover States */
+        .function-nav-btn.severity-critical:hover { border-color: rgba(255, 77, 77, 0.7); color: var(--text-primary); }
+        .function-nav-btn.severity-high:hover { border-color: rgba(255, 159, 67, 0.7); color: var(--text-primary); }
+        .function-nav-btn.severity-medium:hover { border-color: rgba(168, 85, 247, 0.7); color: var(--text-primary); }
+        .function-nav-btn.severity-low:hover { border-color: rgba(77, 171, 247, 0.7); color: var(--text-primary); }
+        .function-nav-btn.severity-passed:hover { border-color: rgba(38, 222, 129, 0.7); color: var(--text-primary); }
+
+        /* Active States (Bright Colors + Dot) */
+        .function-nav-btn.active {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .function-nav-btn.severity-critical.active { 
+            border-color: var(--accent-red); 
+            background: var(--accent-red-bg); 
+            color: var(--accent-red); 
+        }
+        .function-nav-btn.severity-high.active { 
+            border-color: var(--accent-orange); 
+            background: var(--accent-orange-bg); 
+            color: var(--accent-orange); 
+        }
+        .function-nav-btn.severity-medium.active { 
+            border-color: var(--accent-purple); 
+            background: var(--accent-purple-bg); 
+            color: var(--accent-purple); 
+        }
+        .function-nav-btn.severity-low.active { 
+            border-color: var(--accent-blue); 
+            background: var(--accent-blue-bg); 
+            color: var(--accent-blue); 
+        }
+        .function-nav-btn.severity-passed.active { 
+            border-color: var(--accent-green); 
+            background: var(--accent-green-bg); 
+            color: var(--accent-green); 
+        }
+
+        /* Dot Indicator via Pseudo-element */
+        .function-nav-btn::before {
+            content: '';
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: currentColor;
+            margin-right: 0;
+            width: 0;
+            opacity: 0;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .function-nav-btn.active::before {
+            width: 6px;
+            margin-right: 8px;
+            opacity: 1;
+        }
+        /* Call Graph Updates */
+        .graph-label {
+            width: 100px;
+            font-size: 12px;
+            color: #fff; /* Highlighting as requested */
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            text-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
+        }
+
+        .flow-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px 0;
+            color: #fff;
+            font-size: 24px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+            position: relative;
+        }
+
+        /* Graph Node Severity Colors */
+        .graph-node.severity-critical { border-color: var(--accent-red); color: var(--accent-red); background: var(--accent-red-bg); }
+        .graph-node.severity-high { border-color: var(--accent-orange); color: var(--accent-orange); background: var(--accent-orange-bg); }
+        .graph-node.severity-medium { border-color: var(--accent-purple); color: var(--accent-purple); background: var(--accent-purple-bg); }
+        .graph-node.severity-low { border-color: var(--accent-blue); color: var(--accent-blue); background: var(--accent-blue-bg); }
+        .graph-node.severity-passed { border-color: var(--accent-green); color: var(--accent-green); background: var(--accent-green-bg); }
+
+        /* SVG Container for Arrows */
+        .graph-container {
+            position: relative; /* Context for absolute SVG */
+        }
+        
+        .graph-svg-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .flow-arrow-path {
+            stroke: #fff;
+            stroke-width: 2px;
+            fill: none;
+            filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.5));
+            animation: dash 1s linear infinite;
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 0;
+        }
+        
+        /* Hide old block arrows */
+        .flow-arrow {
+            display: none;
+        }
+        
+        /* Adjust spacing since we removed block arrows */
+        .graph-row {
+            margin: 40px 0; /* More space for SVG arrows */
+        }
     </style>
+    <script>
+        function jumpToFunction(nodeText) {
+            // Clean text (remove decorative circles or extra whitespace if any)
+            const funcName = nodeText.replace(/^[●\s]+/, '').trim();
+            
+            // 1. Find the issue card corresponding to this function
+            const issues = document.querySelectorAll('.issue-card');
+            let targetIssue = null;
+            
+            issues.forEach(issue => {
+                const nameEl = issue.querySelector('.issue-function');
+                if (nameEl && nameEl.textContent.trim() === funcName) {
+                    targetIssue = issue;
+                }
+            });
+
+            if (targetIssue) {
+                // 2. Determine severity to switch filter if needed
+                // Use data-severity attribute which matches the filter logic (e.g. 'warning' vs class 'severity-high')
+                const severity = targetIssue.dataset.severity || 'all';
+
+                // If current filter doesn't show this issue, switch filter
+                if (currentFilter !== 'all' && currentFilter !== severity) {
+                    filterByType(severity);
+                }
+
+                // 3. Now find and click the specific navigation button
+                // (filterByType regenerates these buttons, so we must query after filtering)
+                setTimeout(() => {
+                    const navBtns = document.querySelectorAll('.function-nav-btn');
+                    let btnFound = false;
+                    navBtns.forEach(btn => {
+                        if (btn.textContent.trim() === funcName) {
+                            btn.click();
+                            btnFound = true;
+                        }
+                    });
+
+                    if (btnFound) {
+                        document.getElementById('issues-section').scrollIntoView({ behavior: 'smooth' });
+                    }
+                }, 10); // Small delay to allow DOM update from filterByType
+                
+                return;
+            }
+
+            // Fallback for functions without specific issue cards (e.g. main_loop)
+            console.log('No specific issue report found for ' + funcName);
+            
+            // Optional: visual feedback that no link exists
+            const notification = document.createElement('div');
+            notification.textContent = `函数 ${funcName} 未检出问题`;
+            notification.style.cssText = `
+                position: fixed;
+                bottom: 24px;
+                right: 24px;
+                background: var(--bg-secondary);
+                border: 1px solid var(--border);
+                padding: 12px 20px;
+                border-radius: var(--radius);
+                color: var(--text-primary);
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                z-index: 1000;
+                animation: fadeIn 0.3s ease;
+            `;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 2000);
+        }
+
+        function drawArrows() {
+            const svg = document.getElementById('graph-svg');
+            const container = document.querySelector('.graph-container');
+            
+            // Clear existing paths (keep defs)
+            const oldPaths = svg.querySelectorAll('path');
+            oldPaths.forEach(p => p.remove());
+
+            function connect(id1, id2) {
+                const n1 = document.getElementById(id1);
+                const n2 = document.getElementById(id2);
+                if (!n1 || !n2) return;
+
+                const r1 = n1.getBoundingClientRect();
+                const r2 = n2.getBoundingClientRect();
+                const c1 = container.getBoundingClientRect();
+
+                // Calculate connection points
+                // From bottom center of source
+                const x1 = r1.left + r1.width / 2 - c1.left;
+                const y1 = r1.bottom - c1.top;
+                
+                // To top center of target
+                const x2 = r2.left + r2.width / 2 - c1.left;
+                const y2 = r2.top - c1.top;
+
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                
+                // Draw a nice S-curve
+                const midY = (y1 + y2) / 2;
+                const d = `M ${x1} ${y1} C ${x1} ${midY}, ${x2} ${midY}, ${x2} ${y2}`;
+                
+                path.setAttribute('d', d);
+                path.setAttribute('class', 'flow-arrow-path');
+                path.setAttribute('marker-end', 'url(#arrowhead)');
+                svg.appendChild(path);
+            }
+
+            // Draw specific requested flow: main_loop -> fan_mode_switch -> calc_temp_threshold
+            connect('node-main', 'node-target');
+            connect('node-target', 'node-calc');
+        }
+
+        // Draw on load and resize
+        window.addEventListener('load', () => {
+             // Small delay to ensure layout is settled
+             setTimeout(drawArrows, 100);
+             // Also filter initial view to setup buttons
+             filterByType('critical');
+        });
+        window.addEventListener('resize', drawArrows);
+        
+        // Redraw when sections are toggled
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.section-header')) {
+                setTimeout(drawArrows, 400); // Wait for transition
+            }
+        });
+    </script>
 </head>
 <body>
     <div class="container">
@@ -830,13 +1245,13 @@
                 <div class="stat-value">3</div>
                 <div class="stat-label">严重问题</div>
             </div>
-            <div class="stat-card warning" data-filter="warning" onclick="filterByType('warning')">
-                <div class="stat-value">5</div>
+            <div class="stat-card warning" data-filter="high" onclick="filterByType('high')">
+                <div class="stat-value">1</div>
                 <div class="stat-label">警告</div>
             </div>
-            <div class="stat-card success" data-filter="passed" onclick="filterByType('passed')">
-                <div class="stat-value">12</div>
-                <div class="stat-label">检视通过</div>
+            <div class="stat-card medium" style="border-left: 3px solid var(--accent-purple);" data-filter="medium" onclick="filterByType('medium')">
+                <div class="stat-value">2</div>
+                <div class="stat-label">一般问题</div>
             </div>
             <div class="stat-card info" data-filter="all" onclick="filterByType('all')">
                 <div class="stat-value">8</div>
@@ -848,12 +1263,13 @@
         <section class="section" id="issues-section">
             <div class="section-header" onclick="toggleSection('issues-section')">
                 <div class="section-title">
-                    <span class="section-icon">⚠</span>
+                    <span class="section-icon">▼</span>
                     问题列表
                 </div>
                 <span class="section-toggle">▼</span>
             </div>
             <div class="section-content">
+                <div id="function-nav" class="function-nav"></div>
                 <div class="filter-indicator" id="filter-indicator">
                     <span>当前筛选:</span>
                     <span class="filter-tag" id="filter-tag"></span>
@@ -869,7 +1285,7 @@
                         <div class="issue-header">
                             <div class="issue-main">
                                 <div class="issue-title-row">
-                                    <span class="issue-function">fan_mode_switch()</span>
+                                    <span class="issue-function" onclick="copyFunctionName(this, event)">fan_mode_switch()</span>
                                     <span class="severity-badge critical">Critical</span>
                                 </div>
                                 <div class="issue-type">数组越界访问</div>
@@ -887,10 +1303,10 @@
                             <div class="detail-section">
                                 <div class="detail-label">问题代码</div>
                                 <div class="code-block">
-                                    <div><span class="line-number">140</span>void fan_mode_switch(uint8_t mode) {</div>
-                                    <div><span class="line-number">141</span>    uint8_t mode_index = mode - 1;</div>
-                                    <div><span class="line-number">142</span>    <span class="highlight">uint16_t target_speed = fan_speed_table[mode_index];</span></div>
-                                    <div><span class="line-number">143</span>    set_fan_pwm(target_speed);</div>
+                                    <div><span class="line-number">140</span><span class="token-keyword">void</span> <span class="token-func">fan_mode_switch</span>(<span class="token-type">uint8_t</span> <span class="token-param">mode</span>) {</div>
+                                    <div><span class="line-number">141</span>    <span class="token-type">uint8_t</span> <span class="token-var">mode_index</span> = <span class="token-param">mode</span> - <span class="token-number">1</span>;</div>
+                                    <div><span class="line-number">142</span>    <span class="highlight"><span class="token-type">uint16_t</span> <span class="token-var">target_speed</span> = <span class="token-var">fan_speed_table</span>[<span class="token-var">mode_index</span>];</span></div>
+                                    <div><span class="line-number">143</span>    <span class="token-func">set_fan_pwm</span>(<span class="token-var">target_speed</span>);</div>
                                     <div><span class="line-number">144</span>}</div>
                                 </div>
                             </div>
@@ -899,14 +1315,14 @@
                                 <div class="suggestion-box">
                                     添加边界检查，确保 <code>mode_index</code> 不超出数组范围：
                                     <div class="code-block" style="margin-top: 12px;">
-                                        <div><span class="line-number">140</span>void fan_mode_switch(uint8_t mode) {</div>
-                                        <div><span class="line-number">141</span>    if (mode == 0 || mode > FAN_MODE_MAX) {</div>
-                                        <div><span class="line-number">142</span>        log_error("Invalid fan mode: %d", mode);</div>
-                                        <div><span class="line-number">143</span>        return;</div>
+                                        <div><span class="line-number">140</span><span class="token-keyword">void</span> <span class="token-func">fan_mode_switch</span>(<span class="token-type">uint8_t</span> <span class="token-param">mode</span>) {</div>
+                                        <div><span class="line-number">141</span>    <span class="token-keyword">if</span> (<span class="token-param">mode</span> == <span class="token-number">0</span> || <span class="token-param">mode</span> > <span class="token-macro">FAN_MODE_MAX</span>) {</div>
+                                        <div><span class="line-number">142</span>        <span class="token-func">log_error</span>(<span class="token-string">"Invalid fan mode: %d"</span>, <span class="token-param">mode</span>);</div>
+                                        <div><span class="line-number">143</span>        <span class="token-keyword">return</span>;</div>
                                         <div><span class="line-number">144</span>    }</div>
-                                        <div><span class="line-number">145</span>    uint8_t mode_index = mode - 1;</div>
-                                        <div><span class="line-number">146</span>    uint16_t target_speed = fan_speed_table[mode_index];</div>
-                                        <div><span class="line-number">147</span>    set_fan_pwm(target_speed);</div>
+                                        <div><span class="line-number">145</span>    <span class="token-type">uint8_t</span> <span class="token-var">mode_index</span> = <span class="token-param">mode</span> - <span class="token-number">1</span>;</div>
+                                        <div><span class="line-number">146</span>    <span class="token-type">uint16_t</span> <span class="token-var">target_speed</span> = <span class="token-var">fan_speed_table</span>[<span class="token-var">mode_index</span>];</div>
+                                        <div><span class="line-number">147</span>    <span class="token-func">set_fan_pwm</span>(<span class="token-var">target_speed</span>);</div>
                                         <div><span class="line-number">148</span>}</div>
                                     </div>
                                 </div>
@@ -915,11 +1331,11 @@
                     </div>
 
                     <!-- High Issue -->
-                    <div class="issue-card severity-high" data-severity="warning" onclick="toggleIssue(this)">
+                    <div class="issue-card severity-high" data-severity="high" onclick="toggleIssue(this)">
                         <div class="issue-header">
                             <div class="issue-main">
                                 <div class="issue-title-row">
-                                    <span class="issue-function">calc_temp_threshold()</span>
+                                    <span class="issue-function" onclick="copyFunctionName(this, event)">calc_temp_threshold()</span>
                                     <span class="severity-badge high">High</span>
                                 </div>
                                 <div class="issue-type">整数溢出风险</div>
@@ -937,9 +1353,9 @@
                             <div class="detail-section">
                                 <div class="detail-label">问题代码</div>
                                 <div class="code-block">
-                                    <div><span class="line-number">85</span>uint8_t calc_temp_threshold(uint8_t base_temp, uint8_t offset) {</div>
-                                    <div><span class="line-number">86</span>    <span class="highlight">uint8_t result = base_temp + offset;</span></div>
-                                    <div><span class="line-number">87</span>    return result;</div>
+                                    <div><span class="line-number">85</span><span class="token-type">uint8_t</span> <span class="token-func">calc_temp_threshold</span>(<span class="token-type">uint8_t</span> <span class="token-param">base_temp</span>, <span class="token-type">uint8_t</span> <span class="token-param">offset</span>) {</div>
+                                    <div><span class="line-number">86</span>    <span class="highlight"><span class="token-type">uint8_t</span> <span class="token-var">result</span> = <span class="token-param">base_temp</span> + <span class="token-param">offset</span>;</span></div>
+                                    <div><span class="line-number">87</span>    <span class="token-keyword">return</span> <span class="token-var">result</span>;</div>
                                     <div><span class="line-number">88</span>}</div>
                                 </div>
                             </div>
@@ -957,7 +1373,7 @@
                         <div class="issue-header">
                             <div class="issue-main">
                                 <div class="issue-title-row">
-                                    <span class="issue-function">read_temp_sensor()</span>
+                                    <span class="issue-function" onclick="copyFunctionName(this, event)">read_temp_sensor()</span>
                                     <span class="severity-badge critical">Critical</span>
                                 </div>
                                 <div class="issue-type">空指针解引用</div>
@@ -982,11 +1398,11 @@
                     </div>
 
                     <!-- Medium Issue -->
-                    <div class="issue-card severity-medium" data-severity="warning" onclick="toggleIssue(this)">
+                    <div class="issue-card severity-medium" data-severity="medium" onclick="toggleIssue(this)">
                         <div class="issue-header">
                             <div class="issue-main">
                                 <div class="issue-title-row">
-                                    <span class="issue-function">update_fan_state()</span>
+                                    <span class="issue-function" onclick="copyFunctionName(this, event)">update_fan_state()</span>
                                     <span class="severity-badge medium">Medium</span>
                                 </div>
                                 <div class="issue-type">竞态条件</div>
@@ -1011,11 +1427,11 @@
                     </div>
 
                     <!-- Low Issue -->
-                    <div class="issue-card severity-low" data-severity="warning" onclick="toggleIssue(this)">
+                    <div class="issue-card severity-low" data-severity="low" onclick="toggleIssue(this)">
                         <div class="issue-header">
                             <div class="issue-main">
                                 <div class="issue-title-row">
-                                    <span class="issue-function">log_fan_event()</span>
+                                    <span class="issue-function" onclick="copyFunctionName(this, event)">log_fan_event()</span>
                                     <span class="severity-badge low">Low</span>
                                 </div>
                                 <div class="issue-type">魔法数字</div>
@@ -1044,7 +1460,7 @@
                         <div class="issue-header">
                             <div class="issue-main">
                                 <div class="issue-title-row">
-                                    <span class="issue-function">set_fan_pwm()</span>
+                                    <span class="issue-function" onclick="copyFunctionName(this, event)">set_fan_pwm()</span>
                                     <span class="severity-badge" style="background: var(--accent-green-bg); color: var(--accent-green);">Passed</span>
                                 </div>
                                 <div class="issue-type">PWM 输出设置</div>
@@ -1068,7 +1484,7 @@
                         <div class="issue-header">
                             <div class="issue-main">
                                 <div class="issue-title-row">
-                                    <span class="issue-function">validate_mode()</span>
+                                    <span class="issue-function" onclick="copyFunctionName(this, event)">validate_mode()</span>
                                     <span class="severity-badge" style="background: var(--accent-green-bg); color: var(--accent-green);">Passed</span>
                                 </div>
                                 <div class="issue-type">模式验证函数</div>
@@ -1092,7 +1508,7 @@
                         <div class="issue-header">
                             <div class="issue-main">
                                 <div class="issue-title-row">
-                                    <span class="issue-function">init_fan_controller()</span>
+                                    <span class="issue-function" onclick="copyFunctionName(this, event)">init_fan_controller()</span>
                                     <span class="severity-badge" style="background: var(--accent-green-bg); color: var(--accent-green);">Passed</span>
                                 </div>
                                 <div class="issue-type">风扇控制器初始化</div>
@@ -1119,53 +1535,61 @@
         <section class="section" id="callgraph-section">
             <div class="section-header" onclick="toggleSection('callgraph-section')">
                 <div class="section-title">
-                    <span class="section-icon">◇</span>
+                    <span class="section-icon">▼</span>
                     函数调用关系
                 </div>
                 <span class="section-toggle">▼</span>
             </div>
             <div class="section-content">
                 <div class="graph-container">
+                    <svg class="graph-svg-container" id="graph-svg">
+                        <defs>
+                            <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                <polygon points="0 0, 10 3.5, 0 7" fill="#fff" />
+                            </marker>
+                        </defs>
+                    </svg>
+                    
                     <div class="graph-row">
                         <div class="graph-label">调用者</div>
                         <div class="graph-nodes">
-                            <span class="graph-node">
+                            <span id="node-main" class="graph-node" onclick="jumpToFunction(this.innerText)">
                                 <span class="node-indicator"></span>
                                 main_loop()
                             </span>
-                            <span class="graph-node">
+                            <span class="graph-node" onclick="jumpToFunction(this.innerText)">
                                 <span class="node-indicator"></span>
                                 timer_isr()
                             </span>
                         </div>
                     </div>
-                    <div style="text-align: center; color: var(--text-muted); margin: 8px 0;">↓</div>
+                    
                     <div class="graph-row">
                         <div class="graph-label">目标函数</div>
                         <div class="graph-nodes">
-                            <span class="graph-node has-bug">
+                            <span id="node-target" class="graph-node severity-critical" onclick="jumpToFunction(this.innerText)">
                                 <span class="node-indicator"></span>
                                 fan_mode_switch()
                             </span>
                         </div>
                     </div>
-                    <div style="text-align: center; color: var(--text-muted); margin: 8px 0;">↓</div>
+                    
                     <div class="graph-row">
                         <div class="graph-label">被调用</div>
                         <div class="graph-nodes">
-                            <span class="graph-node has-bug">
+                            <span id="node-calc" class="graph-node severity-high" onclick="jumpToFunction(this.innerText)">
                                 <span class="node-indicator"></span>
                                 calc_temp_threshold()
                             </span>
-                            <span class="graph-node">
+                            <span class="graph-node severity-passed" onclick="jumpToFunction(this.innerText)">
                                 <span class="node-indicator"></span>
                                 set_fan_pwm()
                             </span>
-                            <span class="graph-node has-bug">
+                            <span class="graph-node severity-critical" onclick="jumpToFunction(this.innerText)">
                                 <span class="node-indicator"></span>
                                 read_temp_sensor()
                             </span>
-                            <span class="graph-node">
+                            <span class="graph-node severity-passed" onclick="jumpToFunction(this.innerText)">
                                 <span class="node-indicator"></span>
                                 validate_mode()
                             </span>
@@ -1175,171 +1599,11 @@
             </div>
         </section>
 
-        <!-- Checklist Section -->
-        <section class="section" id="checklist-section">
-            <div class="section-header" onclick="toggleSection('checklist-section')">
-                <div class="section-title">
-                    <span class="section-icon">✓</span>
-                    检视覆盖项
-                </div>
-                <span class="section-toggle">▼</span>
-            </div>
-            <div class="section-content">
-                <div class="checklist-grid">
-                    <div class="checklist-item">
-                        <span class="check-icon failed">✕</span>
-                        <div class="checklist-content">
-                            <div class="checklist-name">边界检查</div>
-                            <div class="checklist-desc">数组访问、指针操作边界验证</div>
-                            <div class="checklist-count">发现 2 个问题</div>
-                        </div>
-                    </div>
-                    <div class="checklist-item">
-                        <span class="check-icon failed">✕</span>
-                        <div class="checklist-content">
-                            <div class="checklist-name">空指针检查</div>
-                            <div class="checklist-desc">函数参数和返回值的 NULL 检查</div>
-                            <div class="checklist-count">发现 1 个问题</div>
-                        </div>
-                    </div>
-                    <div class="checklist-item">
-                        <span class="check-icon warning">!</span>
-                        <div class="checklist-content">
-                            <div class="checklist-name">整数溢出</div>
-                            <div class="checklist-desc">算术运算溢出风险评估</div>
-                            <div class="checklist-count">发现 1 个警告</div>
-                        </div>
-                    </div>
-                    <div class="checklist-item">
-                        <span class="check-icon warning">!</span>
-                        <div class="checklist-content">
-                            <div class="checklist-name">并发安全</div>
-                            <div class="checklist-desc">中断上下文与共享资源保护</div>
-                            <div class="checklist-count">发现 1 个警告</div>
-                        </div>
-                    </div>
-                    <div class="checklist-item">
-                        <span class="check-icon passed">✓</span>
-                        <div class="checklist-content">
-                            <div class="checklist-name">内存管理</div>
-                            <div class="checklist-desc">动态内存分配与释放配对</div>
-                            <div class="checklist-count">全部通过</div>
-                        </div>
-                    </div>
-                    <div class="checklist-item">
-                        <span class="check-icon passed">✓</span>
-                        <div class="checklist-content">
-                            <div class="checklist-name">资源释放</div>
-                            <div class="checklist-desc">文件句柄、锁等资源正确释放</div>
-                            <div class="checklist-count">全部通过</div>
-                        </div>
-                    </div>
-                    <div class="checklist-item">
-                        <span class="check-icon passed">✓</span>
-                        <div class="checklist-content">
-                            <div class="checklist-name">错误处理</div>
-                            <div class="checklist-desc">函数返回值检查与错误传播</div>
-                            <div class="checklist-count">全部通过</div>
-                        </div>
-                    </div>
-                    <div class="checklist-item">
-                        <span class="check-icon passed">✓</span>
-                        <div class="checklist-content">
-                            <div class="checklist-name">类型安全</div>
-                            <div class="checklist-desc">类型转换与隐式转换检查</div>
-                            <div class="checklist-count">全部通过</div>
-                        </div>
-                    </div>
-                    <div class="checklist-item">
-                        <span class="check-icon warning">!</span>
-                        <div class="checklist-content">
-                            <div class="checklist-name">代码规范</div>
-                            <div class="checklist-desc">命名、注释、格式一致性</div>
-                            <div class="checklist-count">发现 3 个建议</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Functions Table Section -->
-        <section class="section" id="functions-section">
-            <div class="section-header" onclick="toggleSection('functions-section')">
-                <div class="section-title">
-                    <span class="section-icon">≡</span>
-                    新增函数统计
-                </div>
-                <span class="section-toggle">▼</span>
-            </div>
-            <div class="section-content">
-                <table class="function-table">
-                    <thead>
-                        <tr>
-                            <th>函数名</th>
-                            <th>行数</th>
-                            <th>复杂度</th>
-                            <th>状态</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><span class="function-name">fan_mode_switch()</span></td>
-                            <td><span class="lines-badge">42 lines</span></td>
-                            <td>8</td>
-                            <td><span class="severity-badge critical">2 issues</span></td>
-                        </tr>
-                        <tr>
-                            <td><span class="function-name">calc_temp_threshold()</span></td>
-                            <td><span class="lines-badge">18 lines</span></td>
-                            <td>3</td>
-                            <td><span class="severity-badge high">1 issue</span></td>
-                        </tr>
-                        <tr>
-                            <td><span class="function-name">read_temp_sensor()</span></td>
-                            <td><span class="lines-badge">35 lines</span></td>
-                            <td>5</td>
-                            <td><span class="severity-badge critical">1 issue</span></td>
-                        </tr>
-                        <tr>
-                            <td><span class="function-name">update_fan_state()</span></td>
-                            <td><span class="lines-badge">28 lines</span></td>
-                            <td>4</td>
-                            <td><span class="severity-badge medium">1 issue</span></td>
-                        </tr>
-                        <tr>
-                            <td><span class="function-name">set_fan_pwm()</span></td>
-                            <td><span class="lines-badge">15 lines</span></td>
-                            <td>2</td>
-                            <td><span class="severity-badge low" style="background: var(--accent-green-bg); color: var(--accent-green);">passed</span></td>
-                        </tr>
-                        <tr>
-                            <td><span class="function-name">validate_mode()</span></td>
-                            <td><span class="lines-badge">12 lines</span></td>
-                            <td>2</td>
-                            <td><span class="severity-badge low" style="background: var(--accent-green-bg); color: var(--accent-green);">passed</span></td>
-                        </tr>
-                        <tr>
-                            <td><span class="function-name">log_fan_event()</span></td>
-                            <td><span class="lines-badge">22 lines</span></td>
-                            <td>3</td>
-                            <td><span class="severity-badge low">1 suggestion</span></td>
-                        </tr>
-                        <tr>
-                            <td><span class="function-name">init_fan_controller()</span></td>
-                            <td><span class="lines-badge">45 lines</span></td>
-                            <td>6</td>
-                            <td><span class="severity-badge low" style="background: var(--accent-green-bg); color: var(--accent-green);">passed</span></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
         <!-- Design Summary Section -->
         <section class="section collapsed" id="design-section">
             <div class="section-header" onclick="toggleSection('design-section')">
                 <div class="section-title">
-                    <span class="section-icon">◎</span>
+                    <span class="section-icon">▼</span>
                     设计方案摘要
                 </div>
                 <span class="section-toggle">▼</span>
@@ -1395,24 +1659,120 @@
                 }
             });
 
-            // Filter issues
             const issues = document.querySelectorAll('.issue-card');
+            const navContainer = document.getElementById('function-nav');
+            navContainer.innerHTML = '';
+            
             let visibleCount = 0;
 
+            // Hide all issues initially
             issues.forEach(issue => {
-                const severity = issue.dataset.severity;
+                issue.style.display = 'none';
+                issue.classList.add('filtered-out');
+                issue.classList.remove('expanded');
+            });
+
+            // Grouping buckets for buttons
+            const groups = {
+                'severity-critical': [],
+                'severity-high': [],
+                'severity-medium': [],
+                'severity-passed': []
+            };
+
+            // Collect valid issues
+            issues.forEach((issue) => {
+                const severityFilter = issue.dataset.severity;
+                let match = (type === 'all' || severityFilter === type);
                 
-                if (type === 'all') {
-                    issue.style.display = '';
-                    issue.classList.remove('filtered-out');
+                // Special case: 'medium' filter should include 'low' severity
+                if (type === 'medium' && severityFilter === 'low') {
+                    match = true;
+                }
+                
+                if (match) {
                     visibleCount++;
-                } else if (severity === type) {
-                    issue.style.display = '';
-                    issue.classList.remove('filtered-out');
-                    visibleCount++;
-                } else {
-                    issue.style.display = 'none';
-                    issue.classList.add('filtered-out');
+                    
+                    // Determine specific severity class from the issue card for grouping
+                    let specificSeverity = 'severity-low'; 
+                    issue.classList.forEach(cls => {
+                        if (cls.startsWith('severity-') && cls !== 'severity-expanded') {
+                            specificSeverity = cls;
+                        }
+                    });
+
+                    // Merge low into medium for grouping
+                    if (specificSeverity === 'severity-low') {
+                        specificSeverity = 'severity-medium';
+                    }
+                    
+                    if (groups[specificSeverity]) {
+                        groups[specificSeverity].push(issue);
+                    }
+                }
+            });
+
+            // Generate buttons group by group
+            const severityOrder = ['severity-critical', 'severity-high', 'severity-medium', 'severity-passed'];
+            
+            severityOrder.forEach(severityKey => {
+                const issueGroup = groups[severityKey];
+                if (issueGroup && issueGroup.length > 0) {
+                    const rowDiv = document.createElement('div');
+                    rowDiv.className = 'nav-group-row';
+                    
+                    issueGroup.forEach(issue => {
+                        // Create button
+                        const btn = document.createElement('div');
+                        
+                        // Use consistent coloring based on filter type, OR specific if 'all'
+                        let btnClass = severityKey;
+                        if (type !== 'all') {
+                             const map = {
+                                'critical': 'severity-critical',
+                                'high': 'severity-high',
+                                'medium': 'severity-medium',
+                                'passed': 'severity-passed'
+                            };
+                            
+                            if (type === 'high') btnClass = 'severity-high';
+                            if (type === 'medium') btnClass = 'severity-medium';
+                            if (type === 'critical') btnClass = 'severity-critical';
+                            if (type === 'passed') btnClass = 'severity-passed';
+                        }
+                        
+                        btn.className = `function-nav-btn ${btnClass}`;
+                        
+                        // Extract function name
+                        const funcNameElement = issue.querySelector('.issue-function');
+                        const funcName = funcNameElement ? funcNameElement.textContent : 'Unknown Function';
+                        btn.textContent = funcName;
+                        
+                        btn.onclick = () => {
+                            // Remove active class from all buttons
+                            document.querySelectorAll('.function-nav-btn').forEach(b => b.classList.remove('active'));
+                            btn.classList.add('active');
+                            
+                            // Hide all issues first
+                            issues.forEach(i => {
+                                i.style.display = 'none';
+                                i.classList.add('filtered-out');
+                            });
+                            
+                            // Show and expand the selected issue
+                            issue.style.display = '';
+                            issue.classList.remove('filtered-out');
+                            
+                            // Small delay
+                            setTimeout(() => {
+                                issue.classList.add('expanded');
+                            }, 10);
+                        };
+                        
+                        rowDiv.appendChild(btn);
+                    });
+                    
+                    navContainer.appendChild(rowDiv);
                 }
             });
 
@@ -1429,7 +1789,8 @@
                 
                 const labels = {
                     'critical': '严重问题',
-                    'warning': '警告',
+                    'high': '警告',
+                    'medium': '一般问题',
                     'passed': '检视通过'
                 };
                 filterTag.textContent = labels[type] || type;
@@ -1441,25 +1802,105 @@
             } else {
                 emptyState.classList.remove('active');
             }
-
-            // Expand first visible issue
-            const firstVisible = document.querySelector('.issue-card:not(.filtered-out):not([style*="display: none"])');
-            if (firstVisible) {
-                document.querySelectorAll('.issue-card').forEach(card => card.classList.remove('expanded'));
-                firstVisible.classList.add('expanded');
-            }
-
+            
             // Ensure issues section is expanded
             const issuesSection = document.getElementById('issues-section');
             issuesSection.classList.remove('collapsed');
+        }
 
-            // Smooth scroll to issues section
-            issuesSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // Copy Function Name
+        function copyFunctionName(element, event) {
+            event.stopPropagation(); // Prevent toggling the card
+            
+            const text = element.textContent.trim();
+            navigator.clipboard.writeText(text).then(() => {
+                showTooltip(element, 'Copied!');
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                // Fallback for older browsers if needed
+                fallbackCopy(text);
+                showTooltip(element, 'Copied!');
+            });
+        }
+
+        // Copy Code Block Content
+        function copyCode(block, btn) {
+            // Extract text from the code block, ignoring line numbers
+            let codeText = '';
+            const lines = block.querySelectorAll('div');
+            
+            lines.forEach(line => {
+                // Clone the line to avoid modifying the visible DOM
+                const clone = line.cloneNode(true);
+                // Remove line number
+                const lineNum = clone.querySelector('.line-number');
+                if (lineNum) lineNum.remove();
+                
+                codeText += clone.textContent + '\n';
+            });
+            
+            // If no divs found (maybe plain text?), try direct text content
+            if (!lines.length) {
+                codeText = block.textContent;
+            }
+
+            navigator.clipboard.writeText(codeText).then(() => {
+                const originalText = btn.textContent;
+                btn.textContent = 'Copied!';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                }, 2000);
+            });
+        }
+        
+        function fallbackCopy(text) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand("Copy");
+            textArea.remove();
+        }
+
+        function showTooltip(target, message) {
+            const tooltip = document.createElement('div');
+            tooltip.className = 'copy-tooltip';
+            tooltip.textContent = message;
+            
+            // Position relative to the target
+            const rect = target.getBoundingClientRect();
+            tooltip.style.left = rect.left + 'px';
+            tooltip.style.top = (rect.top - 30) + 'px'; // Above the text
+            
+            document.body.appendChild(tooltip);
+            
+            // Cleanup happens via animation end or timeout
+            setTimeout(() => tooltip.remove(), 1500);
+        }
+
+        // Inject Copy Buttons into Code Blocks
+        function injectCopyButtons() {
+            const blocks = document.querySelectorAll('.code-block');
+            blocks.forEach(block => {
+                // Check if button already exists
+                if (block.querySelector('.code-copy-btn')) return;
+                
+                const btn = document.createElement('button');
+                btn.className = 'code-copy-btn';
+                btn.textContent = 'Copy';
+                btn.onclick = (e) => {
+                    e.stopPropagation(); // Prevent bubbling
+                    copyCode(block, btn);
+                };
+                
+                block.appendChild(btn);
+            });
         }
 
         // Initialize: show critical issues by default
         document.addEventListener('DOMContentLoaded', function() {
             filterByType('critical');
+            injectCopyButtons();
         });
     </script>
 </body>
